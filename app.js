@@ -1,23 +1,37 @@
+// Kirk Wong A00883226
+// COMP 1800 - Movie App
+
+// save the references to html elements since we will refer to them several times
 var movieList = document.getElementById("movieList");
 var table = document.getElementById("movieHistory");
 var tableBody = table.getElementsByTagName('tbody')[0];
 var movieHistoryList = [];
 
-//Ensure that when you refresh your page, the movies in your movie list,
-//as well as the movies in your movie history are preserved.
+// localStorage reference: http://archive.oreilly.com/oreillyschool/courses/javascript2/TodoAppWithLocalStorage.html
 
+// use the .onload function to get a list of all movies that were stored with localStorage
 window.onload = getMovies();
 
+// getMovies function gets all movies stored in localStorage
 function getMovies() {
+    // if items exist in localStorage
     if (localStorage) {
+        // loop through all of the items stored in localStorage
         for (var i = 0; i < localStorage.length; i++) {
+            // for each item, get the key 
             var key = localStorage.key(i);
+            // use the key to determine whether the item is a movie object
             if (key.substring(0, 6) == "movie-") {
+                // if it is a movie item, get the item
+                // localStorage only stores string key/value pairs, so we have to get it as a string
                 var item = localStorage.getItem(key);
+                // convert the string to a novie object
                 var movie = JSON.parse(item);
+                // populate the movie history array with the movie object
                 movieHistoryList.push(movie);
            }
         }
+        // once done looping, populate the page with the saved movies
         addStoredMovies();
     }
     else {
@@ -25,9 +39,10 @@ function getMovies() {
     }
 }
 
+// addStoredMovies() function populates the page with saved movies in localStorage
 function addStoredMovies() {  
     for (var i = 0; i < movieHistoryList.length; i++){  
-        // recreate the movie list
+        // recreate the movie list <li> items
         var li = addMovie(movieHistoryList[i].movieName);
         movieList.appendChild(li); 
 
@@ -42,9 +57,12 @@ function addStoredMovies() {
     }
 }
 
+// saveMovie() function saves movie objects to localStorage
 function saveMovie(movie){ 
     if (localStorage){
         var key = "movie-" + movie.movieName;
+        // use the .stringify function to convert the object to a string because 
+        // localStorage only stores string key/value pairs
         var item = JSON.stringify(movie);
         localStorage.setItem(key, item);
     }
@@ -53,6 +71,7 @@ function saveMovie(movie){
     }
 }          
 
+// addMovie() function creates a new list item element to be appended to the ul element 
 function addMovie(input){ 
     // reference: https://stackoverflow.com/questions/36035736/add-remove-li-element-from-the-ul-javascript
     var element = document.createElement('li');
@@ -72,27 +91,16 @@ function addMovie(input){
         var key = "movie-" + movieHistoryList[listIndex].movieName;
         localStorage.removeItem(key);
 
-        // get the existing count and store into variable oldCount
-        // first uses listIndex to get the row index (+ 1 because there is a table header)
-        // retrieves the second cell (.cells[1]) to get the current count value
-        var oldCount = movieHistoryList[listIndex].watched;
-        oldCount = oldCount - 1;
-        movieHistoryList[listIndex].watched = oldCount;
-        if (oldCount == 0){
-            // remove the movie from the array
-            movieHistoryList.splice(listIndex, 1);
-            // delete the movie from the movie history list
-            table.deleteRow(listIndex + 1);
-        }
-        else {
-            // after decreasing the count by one, assign the count back to the correct cell
-            table.rows[listIndex + 1].cells[1].innerHTML = oldCount;
-        }      
+        // remove the movie from the array
+        movieHistoryList.splice(listIndex, 1);
+        // delete the movie from the movie history list
+        table.deleteRow(listIndex + 1);          
     });    
 
     return element;
 }   
 
+// create a movie object constructor so that we can create movie objects 
 function Movie(name, watched){
     this.movieName = name;
     this.watched = watched;
@@ -104,6 +112,7 @@ document.getElementById("add").onclick = function() {
 	var input = titleCase(document.getElementById("addMovieInput").value);
     // store the reference of the Movie History List
     
+    // create a variable count to store the number of times a movie is watched
     var count = 0;
 
     // check if input is empty, null or undefined
@@ -125,6 +134,7 @@ document.getElementById("add").onclick = function() {
             // push object into array
             movieHistoryList.push(newMovie);
 
+            // save the movie object to localStorage
             saveMovie(newMovie);
 
             // insert a new table row at the end (-1)
@@ -141,19 +151,22 @@ document.getElementById("add").onclick = function() {
             // reference: https://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
             var inputIndex = movieHistoryList.findIndex(i => i.movieName === input);
             
+            // get the current count from the object
             count = movieHistoryList[inputIndex].watched;
+            // since the movie already exists, increase the count by one
             count = count + 1;
-            movieHistoryList[inputIndex].watched = count;        
+            // assign the count back to the object
+            movieHistoryList[inputIndex].watched = count; 
+            // update the table in the watched column        
             table.rows[inputIndex + 1].cells[1].innerHTML = count;
 
+            // save the new watched count to the object in localStorage
             var updateMovie = new Movie(input, count);
             saveMovie(updateMovie);
         }
 
         // clear the input text box
-        clearInput();
-        
-        
+        clearInput();  
     }    
 }
 
@@ -180,7 +193,9 @@ function titleCase(str) {
 document.getElementById("clear").onclick = function() {
 	// Continue to remove li items until ul has no more child nodes
 	movieList.innerHTML = '';	
+
+    // clear the localStorage
     localStorage.clear();
 
-    // clear from movie history list...
+    // need to clear from movie history table
 }
