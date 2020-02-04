@@ -1,0 +1,22 @@
+.flex {
+    display: block;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .container {
+    height: 90vh;
+  }
+
+  li:hover {
+    cursor: pointer;
+  }
+
+  table, th, tr, td {
+    border: 1px solid black;
+  }
+
+  #movieHistory {
+    width:70%;
+  }
+  
