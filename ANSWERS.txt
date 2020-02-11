@@ -1,0 +1,8 @@
+cd movielist_New
+git init
+git add app.js style.css index.html
+git commit -m "initial commit"
+git status
+git remote add origin https://github.com/vivienne815/A00931251gitlab.git
+git push -u origin master
+
