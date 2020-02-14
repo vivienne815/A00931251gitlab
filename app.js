@@ -1,4 +1,5 @@
 // Kirk Wong A00883226
+// Vivienne Li A00931251
 // COMP 1800 - Movie App
 
 // save the references to html elements since we will refer to them several times
